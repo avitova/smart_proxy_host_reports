@@ -15,6 +15,7 @@ class PuppetProcessor < Processor
         @data = YAML.safe_load(data.gsub(YAML_CLEAN, ""), permitted_classes: [Symbol, Time, Date])
       end
     end
+    raise("No content") unless @data
     @body = {}
     @evaluation_times = []
     logger.debug "Processing report #{report_id}"

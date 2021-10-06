@@ -42,7 +42,25 @@ Then call Ansible:
 
 ## Example data
 
-For testing, there are several example data. Before importing them into Foreman, make sure to have `localhost` smart proxy and also a host named `report.example.com`.
+For testing, there are several example data. Before importing them into Foreman, make sure to have `localhost` smart proxy and also a host named `report.example.com`. It is possible to capture example data via `incoming_save_dir` setting. Name generated files correctly and put them into the `contrib/fixtures` directory. There is a utility to use fixtures for development and testing purposes:
+
+```
+$ contrib/upload-fixture
+Usage:
+  contrib/upload-fixture -h               Display this help message
+  contrib/upload-fixture -u URL           Proxy URL (http://localhost:8448)
+  contrib/upload-fixture -f FILE          Fixture to upload
+  contrib/upload-fixture -a               Upload all fixtures
+
+$ contrib/upload-fixture -a
+contrib/fixtures/ansible-copy-nochange.json: 200
+contrib/fixtures/ansible-copy-success.json: 200
+contrib/fixtures/ansible-package-install-failure.json: 200
+contrib/fixtures/ansible-package-install-nochange.json: 200
+contrib/fixtures/ansible-package-install-success.json: 200
+contrib/fixtures/ansible-package-remove-failure.json: 200
+contrib/fixtures/ansible-package-remove-success.json: 200
+```
 
 ### Importing into Foreman directly
 

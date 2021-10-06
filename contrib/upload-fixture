@@ -1,0 +1,66 @@
+#!/bin/bash
+BASEDIR=$(dirname $0)
+[[ -f "$0.conf" ]] && source "$0.conf"
+URL=${URL:-http://localhost:8000}
+
+usage() {
+  echo "Usage:"
+  echo "  $0 -h               Display this help message"
+  echo "  $0 -u URL           Proxy URL ($URL)"
+  echo "  $0 -f FILE          Fixture to upload"
+  echo "  $0 -a               Upload all fixtures"
+}
+
+while getopts "haf:u:" opt; do
+  case ${opt} in
+    u )
+      URL=$OPTARG
+      ;;
+    f )
+      FILE=$OPTARG
+      ;;
+    a )
+      ALL=1
+      ;;
+    h )
+      usage
+      exit 0
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      usage
+      exit 1
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+do_curl() {
+  curl -s -H "Content-Type: $1" \
+    -X POST $URL/host_reports/$2 \
+    -d @$3 -w " - $3: %{http_code}\n"
+}
+
+if [[ -f "$FILE" ]]; then
+  if [[ "$FILE" == *ansible-*.json ]]; then
+    do_curl "application/json" ansible "$FILE"
+  elif [[ "$FILE" == *puppet-*.yaml ]]; then
+    do_curl "application/x-yaml" puppet "$FILE"
+  else
+    echo "Not recognized: $FILE"
+  fi
+elif [[ $ALL -eq 1 ]]; then
+  for FILE in $BASEDIR/fixtures/ansible-*.json; do
+    do_curl "application/json" ansible "$FILE"
+  done
+  for FILE in $BASEDIR/fixtures/puppet-*.yaml; do
+    do_curl "application/x-yaml" puppet "$FILE"
+  done
+else
+  usage
+fi

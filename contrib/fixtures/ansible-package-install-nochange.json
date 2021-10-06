@@ -1,0 +1,67 @@
+{
+    "check_mode": false,
+    "host": "localhost",
+    "metrics": {
+        "time": {
+            "total": 2
+        }
+    },
+    "reported_at": "2021-10-08T13:49:52.402311",
+    "results": [
+        {
+            "failed": false,
+            "result": {
+                "_ansible_no_log": false,
+                "changed": false,
+                "invocation": {
+                    "module_args": {
+                        "allow_downgrade": false,
+                        "autoremove": false,
+                        "bugfix": false,
+                        "disable_gpg_check": false,
+                        "download_only": false,
+                        "install_repoquery": true,
+                        "install_weak_deps": true,
+                        "installroot": "/",
+                        "lock_timeout": 30,
+                        "name": [
+                            "neovim"
+                        ],
+                        "security": false,
+                        "skip_broken": false,
+                        "state": "present",
+                        "update_cache": false,
+                        "update_only": false,
+                        "validate_certs": true
+                    }
+                },
+                "msg": "Nothing to do",
+                "rc": 0
+            },
+            "task": {
+                "action": "ansible.builtin.package",
+                "any_errors_fatal": false,
+                "async": 0,
+                "async_val": 0,
+                "become": false,
+                "become_method": "sudo",
+                "check_mode": false,
+                "connection": "smart",
+                "delay": 5,
+                "diff": false,
+                "finalized": true,
+                "name": "",
+                "poll": 15,
+                "retries": 3,
+                "squashed": true,
+                "throttle": 0,
+                "uuid": "1c697a0b-ae03-f522-0c2f-000000000009"
+            }
+        }
+    ],
+    "status": {
+        "applied": 0,
+        "failed": 0,
+        "skipped": 0
+    }
+}

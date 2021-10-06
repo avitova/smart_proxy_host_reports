@@ -17,8 +17,7 @@ module Proxy::HostReports
     default_settings reported_proxy_hostname: "localhost",
       debug_payload: false,
       spool_dir: "/var/lib/foreman-proxy",
-      keep_reports: false,
-      override_hostname: nil
+      keep_reports: false
 
     http_rackup_path File.expand_path("host_reports_http_config.ru", File.expand_path("../", __FILE__))
     https_rackup_path File.expand_path("host_reports_http_config.ru", File.expand_path("../", __FILE__))
