@@ -43,7 +43,7 @@ shift $((OPTIND -1))
 do_curl() {
   curl -s -H "Content-Type: $1" \
     -X POST $URL/host_reports/$2 \
-    -d @$3 -w " - $3: %{http_code}\n"
+    --data-binary @$3 -w " - $3: %{http_code}\n"
 }
 
 if [[ -f "$FILE" ]]; then
