@@ -26,15 +26,17 @@ Few words about setting up a dev setup.
 Checkoud foreman-ansible-modules and build it via `make` command. Configure
 Ansible collection path to the build directory:
 
-    [defaults]
-    collection_path = /home/lzap/work/foreman-ansible-modules/build
-    callback_whitelist = foreman
-    [callback_foreman]
-    report_type = proxy
-    proxy_url = http://localhost:8000/reports
-    verify_certs = 0
-    client_cert = /home/lzap/DummyX509/client-one.crt
-    client_key = /home/lzap/DummyX509/client-one.key
+```ini
+[defaults]
+collection_path = /home/lzap/work/foreman-ansible-modules/build
+callback_whitelist = foreman
+[callback_foreman]
+report_type = proxy
+proxy_url = http://localhost:8000/reports
+verify_certs = 0
+client_cert = /home/lzap/DummyX509/client-one.crt
+client_key = /home/lzap/DummyX509/client-one.key
+```
 
 Configure Foreman Ansible callback with the correct Foreman URL:
 
@@ -46,7 +48,7 @@ Then call Ansible:
 
 For testing, there are several example data. Before importing them into Foreman, make sure to have `localhost` smart proxy and also a host named `report.example.com`. It is possible to capture example data via `incoming_save_dir` setting. Name generated files correctly and put them into the `contrib/fixtures` directory. There is a utility to use fixtures for development and testing purposes:
 
-```
+```console
 $ contrib/upload-fixture
 Usage:
   contrib/upload-fixture -h               Display this help message
@@ -90,7 +92,7 @@ systemctl enable --now puppetserver
 ```
 
 If you prefer to use HTTPS, set the different reporturl and configure the CA certificates according to the example below
-```
+```bash
 # use HTTPS, without Katello the port is 8443, with Katello it's 9090
 puppet config set reporturl https://$HOSTNAME:8443/reports/puppet
 # install the Smart Proxy CA certificate to the Puppet's localcacert store

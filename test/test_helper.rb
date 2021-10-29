@@ -48,6 +48,7 @@ end
 def remove_volatile_keys(result)
   result["host_report"]["reported_at"] = ""
   result["host_report"]["body"]["reported_at"] = ""
+  result["host_report"]["body"]["reported_at_proxy"] = ""
   result["host_report"]["body"]["id"] = ""
   result["host_report"]["body"]["telemetry"] = {}
 end

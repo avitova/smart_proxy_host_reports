@@ -11,6 +11,7 @@
       "host": "report.example.com",
       "proxy": "localhost",
       "reported_at": "",
+      "reported_at_proxy": "",
       "report_format": 11,
       "puppet_version": "6.19.1",
       "environment": "production",
@@ -793,13 +794,24 @@
         "Concat_fragment[stagingdeb-https-file_footer]",
         "Filebucket[puppet]"
       ],
-      "keywords": [
-        "PuppetHasCorrectiveChange",
-        "PuppetHasSkips",
-        "PuppetResourceFailed:File[mime_magic.conf]",
-        "PuppetHasFailure",
-        "PuppetHasChange"
-      ],
+      "summary": {
+        "foreman": {
+          "change": 0,
+          "nochange": 539,
+          "failure": 0
+        },
+        "native": {
+          "total": 539,
+          "skipped": 1,
+          "failed": 0,
+          "failed_to_restart": 0,
+          "restarted": 0,
+          "changed": 1,
+          "out_of_sync": 0,
+          "scheduled": 0,
+          "corrective_change": 1
+        }
+      },
       "evaluation_times": [
         [
           "Selmodule[rsync_debug]",
@@ -923,18 +935,26 @@
         ]
       ],
       "telemetry": {
-      }
+      },
+      "keywords": [
+        "PuppetStatusUnchanged",
+        "PuppetEnvironment:production",
+        "PuppetCorrectiveChange",
+        "PuppetSkipped",
+        "PuppetFailedToRestart:File[mime_magic.conf]",
+        "PuppetFailedToRestart"
+      ]
     },
     "keywords": [
-      "PuppetHasCorrectiveChange",
-      "PuppetHasSkips",
-      "PuppetResourceFailed:File[mime_magic.conf]",
-      "PuppetHasFailure",
-      "PuppetHasChange"
+      "PuppetStatusUnchanged",
+      "PuppetEnvironment:production",
+      "PuppetCorrectiveChange",
+      "PuppetSkipped",
+      "PuppetFailedToRestart:File[mime_magic.conf]",
+      "PuppetFailedToRestart"
     ],
-    "applied": 2,
-    "failed": 0,
-    "pending": 0,
-    "other": 1
+    "change": 0,
+    "nochange": 539,
+    "failure": 0
   }
 }

@@ -1,0 +1,7 @@
+Ansible examples
+----------------
+
+Make sure to have localhost1.local and localhost2.local in /etc/hosts and ssh key installed.
+
+/etc/hosts:
+127.0.0.1   localhost localhost1.local localhost2.local

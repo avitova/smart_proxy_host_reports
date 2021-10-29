@@ -11,4 +11,4 @@ export FOREMAN_SSL_KEY="/dev/zero"
 # override ENV variables in your own file if you want
 [[ -f ansible.conf.sh ]] && source ansible.conf.sh
 
-ansible-playbook -i localhost, harmless.yaml
+ansible-playbook -i hosts $1 -vvv

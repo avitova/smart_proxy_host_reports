@@ -34,8 +34,27 @@ module Proxy::Reports
       end
       logs
     rescue StandardError => e
-      logger.error "Unable to parse logs", e
+      log_error("Unable to parse logs", e)
       logs
+    end
+
+    def process_root_keywords
+      status = @data["status"]
+      if status == "changed"
+        add_keywords("PuppetStatusChanged")
+      elsif status == "unchanged"
+        add_keywords("PuppetStatusUnchanged")
+      elsif status == "failed"
+        add_keywords("PuppetStatusFailed")
+      end
+      if @data["noop"] == "true"
+        add_keywords("PuppetNoop")
+      end
+      if @data["noop_pending"] == "true"
+        add_keywords("PuppetNoopPending")
+      end
+    rescue StandardError => e
+      log_error("Unable to parse root keywords", e)
     end
 
     def process_resource_statuses
@@ -43,26 +62,18 @@ module Proxy::Reports
       @data["resource_statuses"]&.each_pair do |key, value|
         statuses << key
         @evaluation_times << [key, value["evaluation_time"]]
-        # failures
-        add_keywords("PuppetResourceFailed:#{key}", "PuppetHasFailure") if value["failed"] || value["failed_to_restart"]
-        value["events"]&.each do |event|
-          add_keywords("PuppetResourceFailed:#{key}", "PuppetHasFailure") if event["status"] == "failed"
-          add_keywords("PuppetHasCorrectiveChange") if event["corrective_change"]
-        end
-        # changes
-        add_keywords("PuppetHasChange") if value["changed"]
-        add_keywords("PuppetHasChange") if value["change_count"] && value["change_count"] > 0
-        # changes
-        add_keywords("PuppetIsOutOfSync") if value["out_of_sync"]
-        add_keywords("PuppetIsOutOfSync") if value["out_of_sync_count"] && value["out_of_sync_count"] > 0
-        # skips
-        add_keywords("PuppetHasSkips") if value["skipped"]
-        # corrective changes
-        add_keywords("PuppetHasCorrectiveChange") if value["corrective_change"]
+        add_keywords("PuppetFailed:#{key}", "PuppetFailed") if value["failed"]
+        add_keywords("PuppetFailedToRestart:#{key}", "PuppetFailedToRestart") if value["failed_to_restart"]
+        add_keywords("PuppetCorrectiveChange") if value["corrective_change"]
+        add_keywords("PuppetSkipped") if value["skipped"]
+        add_keywords("PuppetRestarted") if value["restarted"]
+        add_keywords("PuppetScheduled") if value["scheduled"]
+        add_keywords("PuppetOutOfSync") if value["out_of_sync"]
+        add_keywords("PuppetEnvironment:#{@data["environment"]}") if @data["environment"]
       end
       statuses
     rescue StandardError => e
-      logger.error "Unable to parse resource_statuses", e
+      log_error("Unable to parse resource_statuses", e)
       statuses
     end
 
@@ -75,27 +86,36 @@ module Proxy::Reports
       end
       @evaluation_times
     rescue StandardError => e
-      logger.error "Unable to process evaluation_times", e
+      log_error("Unable to parse evaluation_times", e)
       []
     end
 
     def process
-      measure :process do
-        @body["format"] = "puppet"
-        @body["id"] = report_id
-        @body["host"] = hostname_from_config || @data["host"]
-        @body["proxy"] = Proxy::Reports::Plugin.settings.reported_proxy_hostname
-        @body["reported_at"] = @data["time"]
-        KEYS_TO_COPY.each do |key|
-          @body[key] = @data[key]
-        end
-        @body["logs"] = process_logs
-        @body["resource_statuses"] = process_resource_statuses
-        @body["keywords"] = keywords
-        @body["evaluation_times"] = process_evaluation_times
-        @body["telemetry"] = telemetry
-        @body["errors"] = errors if errors?
+      @body["format"] = "puppet"
+      @body["id"] = report_id
+      @body["host"] = hostname_from_config || @data["host"]
+      @body["proxy"] = Proxy::Reports::Plugin.settings.reported_proxy_hostname
+      @body["reported_at"] = @data["time"]
+      @body["reported_at_proxy"] = now_utc
+      KEYS_TO_COPY.each do |key|
+        @body[key] = @data[key]
       end
+      process_root_keywords
+      measure :process_logs do
+        @body["logs"] = process_logs
+      end
+      measure :process_resource_statuses do
+        @body["resource_statuses"] = process_resource_statuses
+      end
+      measure :process_summary do
+        @body["summary"] = process_summary
+      end
+      measure :process_evaluation_times do
+        @body["evaluation_times"] = process_evaluation_times
+      end
+      @body["telemetry"] = telemetry
+      @body["keywords"] = keywords
+      @body["errors"] = errors if errors?
     end
 
     def build_report
@@ -107,11 +127,12 @@ module Proxy::Reports
         format: "puppet",
         version: 1,
         host: @body["host"],
-        reported_at: @body["reported_at"],
-        statuses: process_statuses,
         proxy: @body["proxy"],
-        body: @body,
+        change: @body["summary"]["foreman"]["change"],
+        nochange: @body["summary"]["foreman"]["nochange"],
+        failure: @body["summary"]["foreman"]["failure"],
         keywords: @body["keywords"],
+        body: @body,
       )
     end
 
@@ -126,17 +147,27 @@ module Proxy::Reports
 
     private
 
-    def process_statuses
-      stats = @body["metrics"]["resources"]["values"].collect { |s| [s[0], s[2]] }.to_h
+    def process_summary
+      events = @body["metrics"]["events"]["values"].collect { |s| [s[0], s[2]] }.to_h
+      resources = @body["metrics"]["resources"]["values"].collect { |s| [s[0], s[2]] }.to_h
       {
-        "applied" => stats["changed"] + stats["corrective_change"],
-        "failed" => stats["failed"] + stats["failed_to_restart"],
-        "pending" => stats["scheduled"],
-        "other" => stats["restarted"] + stats["skipped"] + stats["out_of_sync"],
+        "foreman" => {
+          "change" => events["success"],
+          "nochange" => resources["total"] - events["failure"] - events["success"],
+          "failure" => events["failure"],
+        },
+        "native" => resources,
       }
     rescue StandardError => e
-      logger.error "Unable to process statuses", e
-      { "applied" => 0, "failed" => 0, "pending" => 0, "other" => 0 }
+      log_error("Unable to parse summary counts", e)
+      {
+        "foreman" => {
+          "change" => 0,
+          "nochange" => 0,
+          "failure" => 0,
+        },
+        "native" => {},
+      }
     end
   end
 end

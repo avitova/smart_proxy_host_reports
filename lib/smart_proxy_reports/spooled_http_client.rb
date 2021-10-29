@@ -52,6 +52,43 @@ module Proxy::Reports
       @worker.join
     end
 
+    def get_name(filename)
+      filename[filename.rindex("-") + 1..-1]
+    end
+
+    def connect(http, factory, type, endpoint, facts_name = "*")
+      processed = 0
+      files = Dir.glob(spool_path("todo", "*-" + type + "-" + facts_name)).sort
+      files.each do |filename|
+        basename = File.basename(filename)
+        logger.debug "Sending report #{basename}"
+        begin
+          post = factory.create_post(endpoint, File.read(filename))
+          response = http.request(post)
+          logger.info "Report #{basename} sent with HTTP response #{response.code}"
+          logger.debug { "Response body: #{response.body}" }
+          if response.code.start_with?("2")
+            if Proxy::Reports::Plugin.settings.keep_reports
+              spool_move("todo", "done", basename)
+            else
+              FileUtils.rm_f spool_path("todo", basename)
+            end
+          else
+            logger.debug { "Moving failed report to 'fail' spool directory" }
+            spool_move("todo", "done", basename)
+          end
+          processed += 1
+        rescue StandardError => e
+          logger.warn "Unable to send #{basename}, will try on next request: #{e}", e
+          raise if ENV["RACK_ENV"] == "test"
+        end
+      if type == "report"
+        processed += connect(http, factory, "facts", "/api/v2/hosts/facts", basename)
+      end
+      end
+      processed
+    end
+
     def process
       processed = 0
       client = ::Proxy::HttpRequest::ForemanRequest.new
@@ -59,30 +96,8 @@ module Proxy::Reports
       # send all files via a single persistent HTTP connection
       logger.debug "Opening HTTP connection to Foreman"
       client.http.start do |http|
-        Dir.glob(spool_path("todo", "*")) do |filename|
-          basename = File.basename(filename)
-          logger.debug "Sending report #{basename}"
-          begin
-            post = factory.create_post("/api/v2/host_reports", File.read(filename))
-            response = http.request(post)
-            logger.info "Report #{basename} sent with HTTP response #{response.code}"
-            logger.debug { "Response body: #{response.body}" }
-            if response.code.start_with?("2")
-              if Proxy::Reports::Plugin.settings.keep_reports
-                spool_move("todo", "done", basename)
-              else
-                FileUtils.rm_f spool_path("todo", basename)
-              end
-            else
-              logger.debug { "Moving failed report to 'fail' spool directory" }
-              spool_move("todo", "done", basename)
-            end
-            processed += 1
-          rescue StandardError => e
-            logger.warn "Unable to send #{basename}, will try on next request: #{e}", e
-            raise if ENV["RACK_ENV"] == "test"
-          end
-        end
+        processed += connect(http, factory, "report", "/api/v2/host_reports")
+        processed += connect(http, factory, "facts", "/api/v2/hosts/facts")
       end
       logger.debug "Finished uploading #{processed} reports, closing connection"
     end
@@ -91,8 +106,15 @@ module Proxy::Reports
       @worker.wakeup if @worker
     end
 
-    def spool(filename, data)
-      filename = filename.gsub(/[^0-9a-z]/i, "")
+    def time_padding(time)
+      integral = (time.to_i).to_s
+      fraction = (time % 1).to_s[2..-1]
+      integral.rjust(10, "0") + "." + fraction.rjust(10, "0")
+    end
+
+    def spool(prefix, filename, data)
+      time = time_padding(Process.clock_gettime(Process::CLOCK_MONOTONIC))
+      filename = time + "-" + prefix + "-" + filename.gsub(/[^0-9a-z]/i, "")
       file = spool_path("temp", filename)
       File.open(file, "w") { |f| f.write(data) }
       spool_move("temp", "todo", filename)

@@ -31,19 +31,26 @@ module Proxy::Reports
       @hostname_from_config ||= Proxy::Reports::Plugin.settings.override_hostname
     end
 
-    def build_report_root(format:, version:, host:, reported_at:, statuses:, proxy:, body:, keywords:)
+    def now_utc
+      # make sure it contains TZ info: "2022-01-20 14:16:26 UTC"
+      Time.now.utc.to_s
+    end
+
+    def build_report_root(format:, version:, host:, proxy:, change:, nochange:, failure:, body:, keywords:)
       {
         "host_report" => {
           "format" => format,
           "version" => version,
           "host" => host,
-          "reported_at" => reported_at,
+          "reported_at" => now_utc,
           "proxy" => proxy,
           "body" => @json_body ? body.to_json : body,
           "keywords" => keywords,
-        }.merge(statuses),
+          "change" => change,
+          "nochange" => nochange,
+          "failure" => failure,
+        },
       }
-      # TODO add metric with total time
     end
 
     def debug_payload?
@@ -67,8 +74,14 @@ module Proxy::Reports
 
     attr_reader :errors
 
-    def log_error(message)
-      @errors << message.to_s
+    def log_error(message, exception = nil)
+      msg = if exception
+          "#{message}: #{exception}"
+        else
+          message
+        end
+      logger.error msg, exception
+      @errors << msg.to_s
     end
 
     def errors?

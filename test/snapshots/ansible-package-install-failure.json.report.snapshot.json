@@ -11,12 +11,16 @@
       "host": "localhost",
       "proxy": "localhost",
       "reported_at": "",
+      "reported_at_proxy": "",
       "results": [
         {
-          "failed": false,
+          "failed": true,
           "result": {
             "_ansible_no_log": false,
             "changed": false,
+            "failures": [
+              "No package doesnotexist available."
+            ],
             "invocation": {
               "module_args": {
                 "allow_downgrade": false,
@@ -29,7 +33,7 @@
                 "installroot": "/",
                 "lock_timeout": 30,
                 "name": [
-                  "neovim"
+                  "doesnotexist"
                 ],
                 "security": false,
                 "skip_broken": false,
@@ -39,10 +43,8 @@
                 "validate_certs": true
               }
             },
-            "msg": "Nothing to do",
-            "rc": 0,
-            "ansible_facts": {
-            }
+            "msg": "Failed to install some of the specified packages",
+            "rc": 1
           },
           "task": {
             "action": "ansible.builtin.package",
@@ -61,30 +63,45 @@
             "retries": 3,
             "squashed": true,
             "throttle": 0,
-            "uuid": "1c697a0b-ae03-f522-0c2f-000000000009"
+            "uuid": "1c697a0b-ae03-2b39-2a80-000000000009"
           },
-          "level": "info",
-          "friendly_message": "Package(s) neovim are present: Nothing to do"
+          "level": "err",
+          "friendly_message": "Failed to install some of the specified packages"
         }
       ],
+      "summary": {
+        "foreman": {
+          "change": 0,
+          "nochange": 2,
+          "failure": 2
+        },
+        "native": {
+          "changed": 0,
+          "failures": 1,
+          "ignored": 0,
+          "ok": 0,
+          "rescued": 0,
+          "skipped": 0,
+          "unreachable": 0
+        }
+      },
       "keywords": [
-
+        "AnsibleFailure",
+        "AnsibleFailure:ansible.builtin.package"
       ],
       "telemetry": {
       },
-      "status": {
-        "applied": 0,
-        "failed": 0,
-        "skipped": 0
-      },
-      "check_mode": false
+      "check_mode": false,
+      "errors": [
+        "Unable to parse results: no implicit conversion of nil into String"
+      ]
     },
     "keywords": [
-
+      "AnsibleFailure",
+      "AnsibleFailure:ansible.builtin.package"
     ],
-    "applied": 0,
-    "failed": 0,
-    "pending": 0,
-    "other": 0
+    "change": 0,
+    "nochange": 1,
+    "failure": 1
   }
 }

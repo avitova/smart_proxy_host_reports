@@ -1,0 +1,102 @@
+{
+  "host_report": {
+    "format": "ansible",
+    "version": 1,
+    "host": "localhost",
+    "reported_at": "",
+    "proxy": "localhost",
+    "body": {
+      "format": "ansible",
+      "id": "",
+      "host": "localhost",
+      "proxy": "localhost",
+      "reported_at": "",
+      "reported_at_proxy": "",
+      "results": [
+        {
+          "failed": false,
+          "result": {
+            "_ansible_no_log": false,
+            "changed": false,
+            "invocation": {
+              "module_args": {
+                "allow_downgrade": false,
+                "autoremove": false,
+                "bugfix": false,
+                "disable_gpg_check": false,
+                "download_only": false,
+                "install_repoquery": true,
+                "install_weak_deps": true,
+                "installroot": "/",
+                "lock_timeout": 30,
+                "name": [
+                  "doesnotexist"
+                ],
+                "security": false,
+                "skip_broken": false,
+                "state": "absent",
+                "update_cache": false,
+                "update_only": false,
+                "validate_certs": true
+              }
+            },
+            "msg": "Nothing to do",
+            "rc": 0
+          },
+          "task": {
+            "action": "ansible.builtin.package",
+            "any_errors_fatal": false,
+            "async": 0,
+            "async_val": 0,
+            "become": false,
+            "become_method": "sudo",
+            "check_mode": false,
+            "connection": "smart",
+            "delay": 5,
+            "diff": false,
+            "finalized": true,
+            "name": "",
+            "poll": 15,
+            "retries": 3,
+            "squashed": true,
+            "throttle": 0,
+            "uuid": "1c697a0b-ae03-8d98-fd65-000000000009"
+          },
+          "level": "info",
+          "friendly_message": "Package(s) doesnotexist are absent"
+        }
+      ],
+      "summary": {
+        "foreman": {
+          "change": 0,
+          "nochange": 2,
+          "failure": 0
+        },
+        "native": {
+          "changed": 0,
+          "failures": 0,
+          "ignored": 0,
+          "ok": 0,
+          "rescued": 0,
+          "skipped": 0,
+          "unreachable": 0
+        }
+      },
+      "keywords": [
+
+      ],
+      "telemetry": {
+      },
+      "check_mode": false,
+      "errors": [
+        "Unable to parse results: no implicit conversion of nil into String"
+      ]
+    },
+    "keywords": [
+
+    ],
+    "change": 0,
+    "nochange": 1,
+    "failure": 0
+  }
+}

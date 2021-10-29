@@ -1,0 +1,44 @@
+---
+- name: Ensure vim on localhost1
+  hosts: localhost1.local
+  remote_user: root
+
+  tasks:
+    - name: Ensure vim-minimal is installed on l1
+      ansible.builtin.yum:
+        name: vim-minimal
+        state: latest
+    - name: Ensure vim-enhanced is installed on l1
+      ansible.builtin.yum:
+        name: vim-enhanced
+        state: latest
+
+- name: Ensure vim on localhost2
+  hosts: localhost2.local
+  remote_user: root
+
+  tasks:
+    - name: Ensure vim-minimal is installed on l2
+      ansible.builtin.yum:
+        name: vim-minimal
+        state: latest
+    - name: Ensure vim-enhanced is installed on l2
+      ansible.builtin.yum:
+        name: vim-enhanced
+        state: latest
+
+- name: Ensure vim on localhost1 and 2
+  hosts:
+    - localhost1.local
+    - localhost2.local
+  remote_user: root
+
+  tasks:
+    - name: Ensure vim-minimal is installed on both
+      ansible.builtin.yum:
+        name: vim-minimal
+        state: latest
+    - name: Ensure vim-enhanced is installed on both
+      ansible.builtin.yum:
+        name: vim-enhanced
+        state: latest

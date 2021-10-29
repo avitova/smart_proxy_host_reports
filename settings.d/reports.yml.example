@@ -16,7 +16,9 @@
 :keep_reports: false
 
 # Development settings (do not use)
+#
 # Override hostnames of incoming reports
 #:override_hostname: report.example.com
+#
 # Store input payloads in a directory
 #:incoming_save_dir: /var/lib/foreman-proxy/reports/incoming

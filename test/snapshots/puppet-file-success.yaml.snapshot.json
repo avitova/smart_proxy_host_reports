@@ -11,6 +11,7 @@
       "host": "report.example.com",
       "proxy": "localhost",
       "reported_at": "",
+      "reported_at_proxy": "",
       "report_format": 12,
       "puppet_version": "7.7.0",
       "environment": "production",
@@ -162,10 +163,24 @@
         "Schedule[never]",
         "Filebucket[puppet]"
       ],
-      "keywords": [
-        "PuppetHasChange",
-        "PuppetIsOutOfSync"
-      ],
+      "summary": {
+        "foreman": {
+          "change": 1,
+          "nochange": 7,
+          "failure": 0
+        },
+        "native": {
+          "total": 8,
+          "skipped": 0,
+          "failed": 0,
+          "failed_to_restart": 0,
+          "restarted": 0,
+          "changed": 1,
+          "out_of_sync": 1,
+          "scheduled": 0,
+          "corrective_change": 0
+        }
+      },
       "evaluation_times": [
         [
           "File[/tmp/xyz.txt]",
@@ -201,15 +216,20 @@
         ]
       ],
       "telemetry": {
-      }
+      },
+      "keywords": [
+        "PuppetStatusChanged",
+        "PuppetOutOfSync",
+        "PuppetEnvironment:production"
+      ]
     },
     "keywords": [
-      "PuppetHasChange",
-      "PuppetIsOutOfSync"
+      "PuppetStatusChanged",
+      "PuppetOutOfSync",
+      "PuppetEnvironment:production"
     ],
-    "applied": 1,
-    "failed": 0,
-    "pending": 0,
-    "other": 1
+    "change": 1,
+    "nochange": 7,
+    "failure": 0
   }
 }

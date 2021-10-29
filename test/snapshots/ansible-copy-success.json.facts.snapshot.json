@@ -1,0 +1,59 @@
+{
+  "name": "localhost",
+  "facts": {
+    "ansible_facts": {
+      "failed": false,
+      "result": {
+        "_ansible_no_log": false,
+        "changed": true,
+        "checksum": "3a79e40c022cabdde69982e706520194f319500f",
+        "dest": "/tmp/hosts",
+        "gid": 1001,
+        "group": "lzap",
+        "invocation": {
+          "module_args": {
+            "_original_basename": "hosts",
+            "backup": false,
+            "checksum": "3a79e40c022cabdde69982e706520194f319500f",
+            "dest": "/tmp/hosts",
+            "follow": false,
+            "force": true,
+            "src": "/home/lzap/.ansible/tmp/ansible-tmp-1633700453.7651854-307545-97556880926610/source",
+            "unsafe_writes": false
+          }
+        },
+        "md5sum": "3f7d804c34fec7d6a893b51b75e2a0fa",
+        "mode": "0644",
+        "owner": "lzap",
+        "secontext": "unconfined_u:object_r:user_home_t:s0",
+        "size": 446,
+        "src": "/home/lzap/.ansible/tmp/ansible-tmp-1633700453.7651854-307545-97556880926610/source",
+        "state": "file",
+        "uid": 1001
+      },
+      "task": {
+        "action": "ansible.builtin.copy",
+        "any_errors_fatal": false,
+        "async": 0,
+        "async_val": 0,
+        "become": false,
+        "become_method": "sudo",
+        "check_mode": false,
+        "connection": "smart",
+        "delay": 5,
+        "diff": false,
+        "finalized": true,
+        "name": "",
+        "poll": 15,
+        "retries": 3,
+        "squashed": true,
+        "throttle": 0,
+        "uuid": "1c697a0b-ae03-5afa-3c0a-000000000009"
+      },
+      "level": "notice",
+      "friendly_message": "Copy hosts to /tmp/hosts"
+    },
+    "_type": "ansible",
+    "_timestamp": "2021-10-08T13:40:54.205627"
+  }
+}

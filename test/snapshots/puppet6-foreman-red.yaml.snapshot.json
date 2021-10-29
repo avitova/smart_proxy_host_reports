@@ -11,6 +11,7 @@
       "host": "red.example.com",
       "proxy": "localhost",
       "reported_at": "",
+      "reported_at_proxy": "",
       "report_format": 11,
       "puppet_version": "6.19.1",
       "environment": "production",
@@ -669,9 +670,24 @@
         "Postgresql_psql[grant:database:GRANT adminpz8bn8d - ALL - redmine4]",
         "Filebucket[puppet]"
       ],
-      "keywords": [
-        "PuppetIsOutOfSync"
-      ],
+      "summary": {
+        "foreman": {
+          "change": 0,
+          "nochange": 400,
+          "failure": 0
+        },
+        "native": {
+          "total": 400,
+          "skipped": 0,
+          "failed": 0,
+          "failed_to_restart": 0,
+          "restarted": 0,
+          "changed": 0,
+          "out_of_sync": 2,
+          "scheduled": 0,
+          "corrective_change": 0
+        }
+      },
       "evaluation_times": [
         [
           "File[/usr/local/sbin/letsencrypt-domain-validation]",
@@ -795,14 +811,20 @@
         ]
       ],
       "telemetry": {
-      }
+      },
+      "keywords": [
+        "PuppetStatusUnchanged",
+        "PuppetEnvironment:production",
+        "PuppetOutOfSync"
+      ]
     },
     "keywords": [
-      "PuppetIsOutOfSync"
+      "PuppetStatusUnchanged",
+      "PuppetEnvironment:production",
+      "PuppetOutOfSync"
     ],
-    "applied": 0,
-    "failed": 0,
-    "pending": 0,
-    "other": 2
+    "change": 0,
+    "nochange": 400,
+    "failure": 0
   }
 }
